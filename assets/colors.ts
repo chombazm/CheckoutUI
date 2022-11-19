@@ -1,10 +1,11 @@
 export const colors = {
   primary: "#11243E",
 
-  grey: '#465364',
-  lightGrey: '#E7EBF0',
+  grey: "#465364",
+  lightGrey: "#E7EBF0",
   light: "#ffffff",
   dark: "#343a40",
+  black: "#000000",
   transparent: "transparent",
 };
 // export const colors = {
