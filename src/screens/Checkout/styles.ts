@@ -1,13 +1,26 @@
-import { StyleSheet, Platform } from "react-native";
-import { colors } from "../../../assets/colors";
+import { StyleSheet, Platform, Dimensions } from 'react-native';
+import { colors } from '../../../assets/colors';
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 export const styles = StyleSheet.create({
   container: {
-    display: "flex",
+    width: '100%',
+    display: 'flex',
     flex: 1,
-    backgroundColor: colors.light,
+    // backgroundColor: colors.light,
+    // position: 'relative',
     // alignItems: "center",
     // justifyContent: "center",
+  },
+  topContainer: {
+    width: '100%',
+    height: SCREEN_HEIGHT,
+    // backgroundColor: colors.primary,
+  },
+  bottomContainer: {
+    width: '100%',
+    height: SCREEN_HEIGHT,
+    transform: [{ translateY: -100 }],
   },
 
   // productColor: {

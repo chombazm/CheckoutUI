@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   TextInput,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import {
   AppleIcon,
@@ -24,6 +25,13 @@ import { AirtelMoneyLogo, gallery, MtnMoneyLogo } from '../../../assets/images';
 import { PressableArea } from '../../components/PressableArea';
 import { ProductContainer } from '../../components/ProductContainer';
 import { PaymentContainer } from '../../components/PaymentContainer';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 const productData = {
   name: 'Iphone 14 pro',
@@ -37,16 +45,70 @@ const productData = {
   ],
 };
 export const CheckoutScreen = () => {
+  const translateY = useSharedValue(0);
+  const productImageHeight = useSharedValue('90%');
+
+  const context = useSharedValue({ y: 0 });
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      height: productImageHeight.value,
+    };
+  });
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
+
+  const scrollTo = React.useCallback((y: number) => {
+    'worklet';
+    translateY.value = withSpring(y, {
+      damping: 50,
+    });
+    // context.value.y = y;
+  }, []);
+  const gesture = Gesture.Pan()
+    .onStart(() => {
+      context.value = { y: translateY.value };
+    })
+    .onUpdate(e => {
+      translateY.value = e.translationY + context.value.y;
+      translateY.value = Math.max(translateY.value, -SCREEN_HEIGHT * 0.5);
+    })
+    .onEnd(e => {
+      if (e.translationY > -SCREEN_HEIGHT / 9) {
+        scrollTo(-SCREEN_HEIGHT / 9);
+        productImageHeight.value = withSpring('90%', { damping: 100 });
+      } else {
+        scrollTo(-SCREEN_HEIGHT * 0.5);
+        productImageHeight.value = withSpring('50%', { damping: 100 });
+      }
+    });
+
+  React.useEffect(() => {
+    scrollTo(-SCREEN_HEIGHT / 9);
+    productImageHeight.value = withSpring('90%', {
+      damping: 50,
+    });
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <View style={{ flex: 1 }}>
-        <ProductContainer product={productData} />
+    <Animated.View style={styles.container}>
+      <View style={styles.topContainer}>
+        <ProductContainer product={productData} animatedStyle={animatedStyle} />
+        {/* <Text>Chomba</Text> */}
       </View>
-      {/* slide bottom container to pbring payment options */}
-      <View style={{ flex: 1 }}>
-        <PaymentContainer />
-      </View>
+
+      <GestureDetector gesture={gesture}>
+        <Animated.View style={[styles.bottomContainer, rStyle]}>
+          {/* <Animated.Text>Chanda</Animated.Text> */}
+          <PaymentContainer />
+        </Animated.View>
+        {/* <View}> */}
+        {/* </View> */}
+        {/* slide bottom container to pbring payment options */}
+      </GestureDetector>
       <StatusBar style="light" />
-    </View>
+    </Animated.View>
   );
 };

@@ -22,9 +22,14 @@ import { Spacer } from './UsedUtils';
 
 export const PaymentContainer = () => {
   return (
-    <ScrollView style={styles.paymentContainer}>
+    <View style={styles.paymentContainer}>
+      <View style={styles.liner} />
+      {/* <Spacer size={10} /> */}
+      <Text style={styles.productTitle}>Iphone 14</Text>
+      <Spacer size={5} />
+      <Text style={styles.productPrice}>K19999</Text>
       <View style={styles.paymentForm}>
-        <Spacer size={100} />
+        <Spacer size={20} />
         <Text style={styles.formLabel}>Email</Text>
         <TextInput
           style={[styles.formInput, styles.elevateInput, styles.BorderRadiusXs]}
@@ -142,7 +147,7 @@ export const PaymentContainer = () => {
           <Text style={styles.buttonText}>Pay</Text>
         </PressableArea>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -150,10 +155,20 @@ const styles = StyleSheet.create({
   paymentContainer: {
     width: '100%',
     paddingHorizontal: 20,
-
-    // display: "none",
-    // flex: 1,
+    height: '100%',
+    paddingVertical: 20,
+    backgroundColor: colors.light,
   },
+  productTitle: {
+    fontSize: 20,
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
+  productPrice: {
+    fontSize: 16,
+    color: colors.grey,
+  },
+
   paymentButton: {
     width: '100%',
     paddingVertical: 7,
@@ -172,6 +187,13 @@ const styles = StyleSheet.create({
 
   paymentForm: {
     // backgroundColor: 'lavender'
+  },
+  liner: {
+    width: 100,
+    height: 5,
+    alignSelf: 'center',
+    backgroundColor: colors.lightGrey,
+    borderRadius: 3,
   },
   formLabel: {
     marginVertical: 10,

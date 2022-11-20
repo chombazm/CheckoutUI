@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,17 @@ import {
   ImageSourcePropType,
   Platform,
   Pressable,
-} from "react-native";
-import { colors } from "../../assets/colors";
-import { Spacer } from "./UsedUtils";
-
+  ViewStyle,
+  Dimensions,
+} from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
+import { colors } from '../../assets/colors';
+import { PressableArea } from './PressableArea';
+import { Spacer } from './UsedUtils';
+const { height: wHeight } = Dimensions.get('window');
 type ProductProps = {
   product: {
     name: string;
@@ -18,6 +25,7 @@ type ProductProps = {
     gallery: ImageProp[];
     colors: ColorProp[];
   };
+  animatedStyle: Animated.AnimateStyle<ViewStyle>;
 };
 
 type ImageProp = {
@@ -29,20 +37,31 @@ type ColorProp = {
   name: string;
   hex: string;
 };
-export const ProductContainer = ({ product }: ProductProps) => {
+export const ProductContainer = ({ product, animatedStyle }: ProductProps) => {
   const [displayImage, setDisplayImage] = React.useState<ImageProp>(
-    product.gallery[3]
+    product.gallery[0],
   );
 
   const [selectedColor, setSelectedColor] = React.useState<ColorProp>(
-    product.colors[0]
+    product.colors[0],
   );
+
+  const colorRingSize = useSharedValue(25);
+
+  const colorRingStyle = useAnimatedStyle(() => {
+    return {
+      width: colorRingSize.value,
+      height: colorRingSize.value,
+      borderRadius: colorRingSize.value / 2,
+    };
+  });
 
   const { name, price, gallery, colors } = product;
   // const imageHero = gallery[0];
 
   const handleImageChange = (color: ColorProp) => {
-    const image = gallery.find((image) => image.name === color.name);
+    const image = gallery.find(image => image.name === color.name);
+    console.log(image, 'image');
     if (image) {
       setDisplayImage(image);
       setSelectedColor(color);
@@ -51,7 +70,7 @@ export const ProductContainer = ({ product }: ProductProps) => {
     setDisplayImage(gallery[0]);
   };
   return (
-    <View style={styles.productContainer}>
+    <Animated.View style={[styles.productContainer, animatedStyle]}>
       <Image
         source={displayImage.image}
         style={styles.productImage}
@@ -60,9 +79,10 @@ export const ProductContainer = ({ product }: ProductProps) => {
 
       <View style={styles.productInfo}>
         <View style={styles.productColorContainer}>
-          {colors.map((color) => (
-            <Pressable
+          {colors.map(color => (
+            <PressableArea
               onPress={() => {
+                console.log('pressed');
                 handleImageChange(color);
               }}
               key={color.name}
@@ -75,25 +95,25 @@ export const ProductContainer = ({ product }: ProductProps) => {
             />
           ))}
         </View>
-        <Spacer size={10} />
-        <Text style={styles.productTitle}>{name}</Text>
-        <Spacer size={5} />
-        <Text style={styles.productPrice}>K{price}</Text>
       </View>
-    </View>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   productContainer: {
-    width: "100%",
+    width: '100%',
+    height: '50%',
+    // height: '90%',
+    // height: 400,
+    // height: wHeight,
     // flex: 1,
     // height: 100,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: colors.black,
-    marginBottom: -20,
-    paddingTop: 100,
+    // marginBottom: -20,
+    // paddingTop: 30,
     zIndex: 1,
     // flexDirection: "row",
     // justifyContent: "space-between",
@@ -103,21 +123,21 @@ const styles = StyleSheet.create({
   productImage: {
     // alignSelf: "center",
     // width: 500,
-    height: "100%",
+    height: '100%',
     aspectRatio: 1,
     // marginTop: 10,
   },
   productInfo: {
-    width: "100%",
-    alignSelf: "center",
+    width: '100%',
+    alignSelf: 'center',
     padding: 20,
-    backgroundColor: colors.light,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    // backgroundColor: colors.light,
+    // borderTopLeftRadius: 20,
+    // borderTopRightRadius: 20,
     // position: "absolute",
     // bottom: 100,
     // borderRadius: 10,
-    marginTop: -40,
+    marginTop: -50,
     // ...Platform.select({
     //   ios: {
     //     shadowColor: "#aaa",
@@ -130,25 +150,16 @@ const styles = StyleSheet.create({
     //   },
     // }),
   },
-  productTitle: {
-    fontSize: 20,
-    color: colors.primary,
-    fontWeight: "bold",
-  },
-  productPrice: {
-    fontSize: 28,
-    color: colors.grey,
-  },
 
   productColor: {
     fontSize: 16,
   },
   productColorContainer: {
     width: 100,
-    alignSelf: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   productColorDot: {
     width: 15,
@@ -157,7 +168,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   productColorDotActive: {
+    width: 24,
+    height: 24,
     borderWidth: 2,
+    borderRadius: 30,
     borderColor: colors.primary,
   },
 });
